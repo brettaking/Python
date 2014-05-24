@@ -1,50 +1,55 @@
 from random import shuffle
 
-n = int(raw_input("How many decks are there?"))
+def getIntInRange(low, high, prompt = "", errmsg = ""):
+    if prompt == "":
+        prompt = "Please enter an integer in the range [%d,%d]." % (low, high)
+    if errmsg == "":
+        errmsg = "The input you entered was not a valid integer in the range [%d,%d]; please retry your input." % (low, high)
+
+    good_input = False
+    n = 0
+
+    while(not good_input):
+        input = raw_input(prompt)
+        try:
+            n = int(input)
+            if str(n) == input and n >= low and n <= high:
+                good_input = True
+        except:
+            pass
+
+        if not good_input:
+            print(errmsg)
+
+    return n
+	
+n = getIntInRange(1,10,"Please enter the number of decks that you want in the shoe (1-10): ", "That's not a valid number of decks.")
 
 suits = ["C", "D", "H", "S"]
-value = ["Ace", "2", "3", "4" , "5" , "6" , "7" , "8" , "9" , "10" , "J", "Q" , "K" ]
-
-ten_pointers = ["10", "J", "Q", "K"]
-
-aces =[]
-for s in suits:
-    aces.append("Ace" + s)
-
-ten_pointers_suits = []
-for t in ten_pointers:
-    for s in suits:
-        ten_pointers_suits.append(t+s)
-
-blackjack = []
-for a in aces:
-    for t in ten_pointers_suits:
-        blackjack.append(a + "," + t)
-        blackjack.append(t + ","+ a)
+values = {"Ace": 11, "2": 2, "3":3, "4": 4, "5": 5 , "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10}
 
 deck = []
 
-for i in suits:
-    for j in value:
-        deck.append(j + i)
+for suit in suits:
+	for value in values:
+		deck.append((suit, value))
+		
+
 
 total_decks = deck * n
-
 shuffle(total_decks)
 
-number_hands = len(total_decks) / 2
-
-draw = []
-for i in range(0, len(total_decks) -1, 2):
-    draw.append(total_decks[i] + "," + total_decks[i +1])
-  
 count = 0 
-for i in draw:
-    if i in blackjack:
-        print i + " -Blackjack!"
-        count += 1
-    else:
-        print i
+number_hands = len(total_decks) / 2
+stop_hand = len(total_decks) - 1
+for i in range(0, stop_hand, 2):
+	card1, card2 = total_decks[i], total_decks[i + 1]
+	display = "%s%s %s%s" % (card1[1], card1[0], card2[1], card2[0])
+	if values[card1[1]] + values[card2[1]] == 21:
+		display += " -Blackjack!"
+		count += 1
+	print display
+
         
 percent = float(count) / float(number_hands) * 100
 
